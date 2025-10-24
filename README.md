@@ -2,6 +2,14 @@
 
 A modern, responsive ticket management web application built with Vue.js 3, featuring complete CRUD operations, authentication, and a beautiful blue and white UI design.
 
+## 🌐 Live Demo
+
+- **Live Application**: https://vue-ticket-app.netlify.app/
+- **GitHub Repository**: https://github.com/Danielagboola52/vue-ticket-app.git
+
+---
+
+
 ## 🚀 Features
 
 - **Landing Page**: Eye-catching hero section with wavy SVG background and animated decorative circles
