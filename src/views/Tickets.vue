@@ -23,7 +23,7 @@
     <div class="tickets-content">
       <div class="container">
         <div class="header-section">
-          <div>
+          <div class="header-text">
             <h1 class="page-title">Ticket Management</h1>
             <p class="page-subtitle">Create and manage your support tickets</p>
           </div>
@@ -218,8 +218,6 @@ export default {
     },
     saveTickets() {
       localStorage.setItem('tickets', JSON.stringify(this.tickets))
-      // Update dashboard stats
-      this.$router.go(0) // Refresh to update stats
     },
     openCreateModal() {
       this.isEditing = false
@@ -269,14 +267,12 @@ export default {
       }
 
       if (this.isEditing) {
-        // Update existing ticket
         const index = this.tickets.findIndex(t => t.id === this.form.id)
         if (index !== -1) {
           this.tickets[index] = { ...this.form }
           this.showToast('Ticket updated successfully!', 'success')
         }
       } else {
-        // Create new ticket
         const newTicket = {
           ...this.form,
           id: Date.now(),
@@ -338,38 +334,44 @@ export default {
 </script>
 
 <style scoped>
+* {
+  box-sizing: border-box;
+}
+
 .tickets-page {
   min-height: 100vh;
   background-color: #f5f7fa;
   display: flex;
   flex-direction: column;
+  width: 100%;
+  overflow-x: hidden;
 }
 
-/* Navigation */
 .navbar {
   background: white;
   box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
   position: sticky;
   top: 0;
   z-index: 100;
+  width: 100%;
 }
 
 .container {
   max-width: 1440px;
   margin: 0 auto;
-  padding: 0 2rem;
+  padding: 0 1rem;
+  width: 100%;
 }
 
 .navbar .container {
   display: flex;
   justify-content: space-between;
   align-items: center;
-  padding: 1.25rem 2rem;
-  gap: 2rem;
+  padding: 1rem;
 }
 
 .nav-brand {
-  font-size: 1.75rem;
+  font-size: 1.5rem;
   font-weight: bold;
   color: #2563eb;
   white-space: nowrap;
@@ -383,11 +385,12 @@ export default {
   color: #2563eb;
   cursor: pointer;
   padding: 0.5rem;
+  z-index: 101;
 }
 
 .nav-links {
   display: flex;
-  gap: 2rem;
+  gap: 1.5rem;
   align-items: center;
   margin-left: auto;
 }
@@ -397,7 +400,7 @@ export default {
   text-decoration: none;
   font-weight: 500;
   transition: color 0.3s;
-  padding: 0.5rem 1rem;
+  padding: 0.5rem 0.75rem;
 }
 
 .nav-link:hover,
@@ -408,53 +411,58 @@ export default {
 .btn-logout {
   background: #dc2626;
   color: white;
-  padding: 0.625rem 1.5rem;
+  padding: 0.625rem 1.25rem;
   border: none;
   border-radius: 8px;
   font-weight: 600;
   cursor: pointer;
   transition: background 0.3s;
   white-space: nowrap;
+  font-size: 0.95rem;
 }
 
 .btn-logout:hover {
   background: #b91c1c;
 }
 
-/* Content */
 .tickets-content {
   flex: 1;
-  padding: 3rem 0;
+  padding: 2.5rem 0;
 }
 
 .header-section {
   display: flex;
   justify-content: space-between;
   align-items: center;
-  margin-bottom: 2.5rem;
-  gap: 1.5rem;
+  margin-bottom: 2rem;
+  gap: 1rem;
   flex-wrap: wrap;
 }
 
+.header-text {
+  flex: 1;
+  min-width: 200px;
+}
+
 .page-title {
-  font-size: 2.5rem;
+  font-size: 2rem;
   color: #1e293b;
   margin-bottom: 0.5rem;
 }
 
 .page-subtitle {
-  font-size: 1.1rem;
+  font-size: 1rem;
   color: #64748b;
 }
 
 .btn {
-  padding: 0.875rem 1.75rem;
+  padding: 0.875rem 1.5rem;
   border-radius: 8px;
   font-weight: 600;
   border: none;
   cursor: pointer;
   transition: all 0.3s;
-  font-size: 1rem;
+  font-size: 0.95rem;
   text-decoration: none;
   display: inline-block;
 }
@@ -487,42 +495,41 @@ export default {
   background: #b91c1c;
 }
 
-/* Empty State */
 .empty-state {
   background: white;
-  padding: 4rem 2rem;
+  padding: 3rem 2rem;
   border-radius: 12px;
   box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
   text-align: center;
 }
 
 .empty-icon {
-  font-size: 4rem;
+  font-size: 3.5rem;
   margin-bottom: 1.5rem;
   opacity: 0.5;
 }
 
 .empty-state h3 {
   color: #1e293b;
-  font-size: 1.5rem;
+  font-size: 1.35rem;
   margin-bottom: 0.5rem;
 }
 
 .empty-state p {
   color: #64748b;
   margin-bottom: 2rem;
+  font-size: 0.95rem;
 }
 
-/* Tickets Grid */
 .tickets-grid {
   display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(350px, 1fr));
-  gap: 1.5rem;
+  grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+  gap: 1.25rem;
 }
 
 .ticket-card {
   background: white;
-  padding: 1.75rem;
+  padding: 1.5rem;
   border-radius: 12px;
   box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
   transition: transform 0.3s, box-shadow 0.3s;
@@ -537,24 +544,26 @@ export default {
   display: flex;
   justify-content: space-between;
   align-items: start;
-  gap: 1rem;
+  gap: 0.75rem;
   margin-bottom: 1rem;
 }
 
 .ticket-title {
   color: #1e293b;
-  font-size: 1.25rem;
+  font-size: 1.15rem;
   margin: 0;
   flex: 1;
   word-break: break-word;
+  line-height: 1.3;
 }
 
 .status-badge {
-  padding: 0.375rem 0.875rem;
+  padding: 0.35rem 0.75rem;
   border-radius: 20px;
-  font-size: 0.85rem;
+  font-size: 0.8rem;
   font-weight: 600;
   white-space: nowrap;
+  flex-shrink: 0;
 }
 
 .status-badge.open {
@@ -576,16 +585,17 @@ export default {
   color: #64748b;
   margin-bottom: 1rem;
   line-height: 1.6;
+  font-size: 0.95rem;
 }
 
 .ticket-meta {
   display: flex;
   justify-content: space-between;
   align-items: center;
-  margin-bottom: 1.25rem;
+  margin-bottom: 1rem;
   padding-top: 1rem;
   border-top: 1px solid #e2e8f0;
-  font-size: 0.9rem;
+  font-size: 0.85rem;
   color: #64748b;
   flex-wrap: wrap;
   gap: 0.5rem;
@@ -597,15 +607,15 @@ export default {
 
 .ticket-actions {
   display: flex;
-  gap: 0.75rem;
+  gap: 0.625rem;
 }
 
 .btn-action {
   flex: 1;
-  padding: 0.625rem 1rem;
+  padding: 0.625rem 0.875rem;
   border: none;
   border-radius: 6px;
-  font-size: 0.9rem;
+  font-size: 0.85rem;
   font-weight: 600;
   cursor: pointer;
   transition: all 0.3s;
@@ -629,7 +639,6 @@ export default {
   background: #fecaca;
 }
 
-/* Modal */
 .modal-overlay {
   position: fixed;
   top: 0;
@@ -662,13 +671,13 @@ export default {
   display: flex;
   justify-content: space-between;
   align-items: center;
-  padding: 1.5rem 2rem;
+  padding: 1.25rem 1.5rem;
   border-bottom: 1px solid #e2e8f0;
 }
 
 .modal-header h2 {
   color: #1e293b;
-  font-size: 1.5rem;
+  font-size: 1.35rem;
   margin: 0;
 }
 
@@ -686,6 +695,7 @@ export default {
   justify-content: center;
   border-radius: 6px;
   transition: background 0.3s;
+  flex-shrink: 0;
 }
 
 .modal-close:hover {
@@ -693,13 +703,14 @@ export default {
 }
 
 .modal-body {
-  padding: 2rem;
+  padding: 1.5rem;
 }
 
 .modal-body p {
   color: #475569;
   line-height: 1.6;
   margin-bottom: 1rem;
+  font-size: 0.95rem;
 }
 
 .warning-text {
@@ -709,17 +720,17 @@ export default {
 }
 
 .modal-form {
-  padding: 2rem;
+  padding: 1.5rem;
 }
 
 .form-group {
-  margin-bottom: 1.5rem;
+  margin-bottom: 1.25rem;
 }
 
 .form-row {
   display: grid;
   grid-template-columns: 1fr 1fr;
-  gap: 1.5rem;
+  gap: 1rem;
 }
 
 .form-group label {
@@ -727,6 +738,7 @@ export default {
   color: #334155;
   font-weight: 600;
   margin-bottom: 0.5rem;
+  font-size: 0.95rem;
 }
 
 .required {
@@ -737,10 +749,10 @@ export default {
 .form-group textarea,
 .form-group select {
   width: 100%;
-  padding: 0.875rem;
+  padding: 0.75rem;
   border: 2px solid #e2e8f0;
   border-radius: 8px;
-  font-size: 1rem;
+  font-size: 0.95rem;
   transition: border-color 0.3s;
   font-family: inherit;
 }
@@ -760,45 +772,167 @@ export default {
 .error-message {
   display: block;
   color: #dc2626;
-  font-size: 0.85rem;
+  font-size: 0.8rem;
   margin-top: 0.375rem;
 }
 
 .modal-actions {
   display: flex;
-  gap: 1rem;
-  padding: 1.5rem 2rem;
+  gap: 0.75rem;
+  padding: 1.25rem 1.5rem;
   border-top: 1px solid #e2e8f0;
   justify-content: flex-end;
 }
 
-/* Footer */
 .footer {
   background: #1e293b;
   color: white;
   padding: 2rem 0;
   text-align: center;
   margin-top: auto;
+  width: 100%;
 }
 
-/* Responsive */
-@media (max-width: 1024px) {
-  .tickets-grid {
-    grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
-  }
+.footer p {
+  font-size: 0.9rem;
+  color: #94a3b8;
 }
 
-@media (max-width: 768px) {
-  .mobile-menu-btn {
-    display: block;
+@media (min-width: 768px) {
+  .container {
+    padding: 0 2rem;
   }
   
   .navbar .container {
-    padding: 1rem;
+    padding: 1.25rem 2rem;
   }
   
   .nav-brand {
+    font-size: 1.75rem;
+  }
+  
+  .nav-links {
+    gap: 2rem;
+  }
+  
+  .nav-link {
+    padding: 0.5rem 1rem;
+  }
+  
+  .btn-logout {
+    padding: 0.625rem 1.5rem;
+    font-size: 1rem;
+  }
+  
+  .tickets-content {
+    padding: 3rem 0;
+  }
+  
+  .header-section {
+    margin-bottom: 2.5rem;
+    gap: 1.5rem;
+  }
+  
+  .page-title {
+    font-size: 2.5rem;
+  }
+  
+  .page-subtitle {
+    font-size: 1.1rem;
+  }
+  
+  .btn {
+    padding: 0.875rem 1.75rem;
+    font-size: 1rem;
+  }
+  
+  .empty-state {
+    padding: 4rem 2rem;
+  }
+  
+  .empty-icon {
+    font-size: 4rem;
+  }
+  
+  .empty-state h3 {
     font-size: 1.5rem;
+  }
+  
+  .tickets-grid {
+    grid-template-columns: repeat(auto-fill, minmax(350px, 1fr));
+    gap: 1.5rem;
+  }
+  
+  .ticket-card {
+    padding: 1.75rem;
+  }
+  
+  .ticket-title {
+    font-size: 1.25rem;
+  }
+  
+  .status-badge {
+    padding: 0.375rem 0.875rem;
+    font-size: 0.85rem;
+  }
+  
+  .ticket-description {
+    font-size: 1rem;
+  }
+  
+  .ticket-meta {
+    font-size: 0.9rem;
+  }
+  
+  .btn-action {
+    padding: 0.625rem 1rem;
+    font-size: 0.9rem;
+  }
+  
+  .modal-header {
+    padding: 1.5rem 2rem;
+  }
+  
+  .modal-header h2 {
+    font-size: 1.5rem;
+  }
+  
+  .modal-form {
+    padding: 2rem;
+  }
+  
+  .modal-body {
+    padding: 2rem;
+  }
+  
+  .form-group {
+    margin-bottom: 1.5rem;
+  }
+  
+  .form-row {
+    gap: 1.5rem;
+  }
+  
+  .form-group label {
+    font-size: 1rem;
+  }
+  
+  .form-group input,
+  .form-group textarea,
+  .form-group select {
+    padding: 0.875rem;
+    font-size: 1rem;
+  }
+  
+  .modal-actions {
+    gap: 1rem;
+    padding: 1.5rem 2rem;
+  }
+}
+
+@media (max-width: 767px) {
+  .mobile-menu-btn {
+    display: block;
   }
   
   .nav-links {
@@ -815,6 +949,7 @@ export default {
     transition: right 0.3s ease;
     align-items: stretch;
     gap: 1rem;
+    margin-left: 0;
   }
   
   .nav-links.mobile-open {
@@ -825,6 +960,8 @@ export default {
     padding: 1rem;
     text-align: center;
     border-bottom: 1px solid #e2e8f0;
+    display: block;
+    width: 100%;
   }
   
   .btn-logout {
@@ -837,8 +974,12 @@ export default {
     align-items: stretch;
   }
   
-  .page-title {
-    font-size: 2rem;
+  .header-text {
+    text-align: center;
+  }
+  
+  .btn {
+    width: 100%;
   }
   
   .tickets-grid {
@@ -849,11 +990,6 @@ export default {
     grid-template-columns: 1fr;
   }
   
-  .modal {
-    max-width: 100%;
-    margin: 1rem;
-  }
-  
   .modal-actions {
     flex-direction: column-reverse;
   }
@@ -861,28 +997,60 @@ export default {
   .modal-actions .btn {
     width: 100%;
   }
-  
-  .container {
-    padding: 0 1rem;
-  }
-  
-  .tickets-content {
-    padding: 2rem 0;
-  }
 }
 
 @media (max-width: 480px) {
+  .nav-brand {
+    font-size: 1.25rem;
+  }
+  
   .page-title {
     font-size: 1.75rem;
   }
   
+  .page-subtitle {
+    font-size: 0.9rem;
+  }
+  
+  .ticket-card {
+    padding: 1.25rem;
+  }
+  
   .ticket-title {
-    font-size: 1.1rem;
+    font-size: 1.05rem;
+  }
+  
+  .status-badge {
+    font-size: 0.75rem;
+    padding: 0.3rem 0.65rem;
+  }
+  
+  .modal {
+    margin: 0.5rem;
+  }
+  
+  .modal-header h2 {
+    font-size: 1.15rem;
+  }
+}
+
+@media (max-width: 360px) {
+  .tickets-content {
+    padding: 2rem 0;
+  }
+  
+  .ticket-card {
+    padding: 1rem;
   }
   
   .modal-form,
   .modal-body {
-    padding: 1.5rem;
+    padding: 1rem;
+  }
+  
+  .modal-header,
+  .modal-actions {
+    padding: 1rem;
   }
 }
 </style>

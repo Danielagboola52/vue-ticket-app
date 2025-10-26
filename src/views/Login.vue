@@ -58,18 +58,42 @@ export default {
   },
   methods: {
     handleLogin() {
-      // Clear previous errors
       this.error = ''
 
-      // Simple validation
+      // Validate inputs
       if (!this.email || !this.password) {
         this.error = 'Please fill in all fields'
         return
       }
 
-      // Simulate authentication (accept any email/password for demo)
-      const token = 'demo_token_' + Date.now()
+      // Get users from localStorage
+      const usersJSON = localStorage.getItem('ticketapp_users')
+      const users = usersJSON ? JSON.parse(usersJSON) : []
+
+      // Check if users exist
+      if (users.length === 0) {
+        this.error = 'No account found. Please sign up first.'
+        return
+      }
+
+      // Find user by email
+      const user = users.find(u => u.email.toLowerCase() === this.email.toLowerCase())
+
+      if (!user) {
+        this.error = 'Invalid email or password'
+        return
+      }
+
+      // Check password
+      if (user.password !== this.password) {
+        this.error = 'Invalid email or password'
+        return
+      }
+
+      // Login successful - create session
+      const token = 'token_' + user.id + '_' + Date.now()
       localStorage.setItem('ticketapp_session', token)
+      localStorage.setItem('ticketapp_current_user', JSON.stringify(user))
 
       // Redirect to dashboard
       this.$router.push('/dashboard')
@@ -79,13 +103,18 @@ export default {
 </script>
 
 <style scoped>
+* {
+  box-sizing: border-box;
+}
+
 .auth-page {
   min-height: 100vh;
   background: linear-gradient(135deg, #2563eb 0%, #3b82f6 100%);
   display: flex;
   align-items: center;
   justify-content: center;
-  padding: 2rem;
+  padding: 1rem;
+  width: 100%;
 }
 
 .container {
@@ -94,11 +123,12 @@ export default {
   width: 100%;
   display: flex;
   justify-content: center;
+  padding: 0 1rem;
 }
 
 .auth-box {
   background: white;
-  padding: 3rem;
+  padding: 2.5rem 2rem;
   border-radius: 16px;
   box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
   width: 100%;
@@ -106,7 +136,7 @@ export default {
 }
 
 .auth-title {
-  font-size: 2rem;
+  font-size: 1.75rem;
   color: #1e293b;
   margin-bottom: 0.5rem;
   text-align: center;
@@ -116,6 +146,7 @@ export default {
   color: #64748b;
   text-align: center;
   margin-bottom: 2rem;
+  font-size: 0.95rem;
 }
 
 .error-message {
@@ -140,6 +171,7 @@ export default {
   color: #334155;
   font-weight: 600;
   margin-bottom: 0.5rem;
+  font-size: 0.95rem;
 }
 
 .form-group input {
@@ -182,6 +214,7 @@ export default {
 .auth-footer {
   text-align: center;
   color: #64748b;
+  font-size: 0.95rem;
 }
 
 .link {
@@ -205,5 +238,60 @@ export default {
 
 .back-link:hover {
   color: #2563eb;
+}
+
+/* Tablet - 768px and above */
+@media (min-width: 768px) {
+  .auth-page {
+    padding: 2rem;
+  }
+  
+  .auth-box {
+    padding: 3rem;
+  }
+  
+  .auth-title {
+    font-size: 2rem;
+  }
+  
+  .auth-subtitle {
+    font-size: 1rem;
+  }
+}
+
+/* Small Mobile - below 480px */
+@media (max-width: 480px) {
+  .auth-box {
+    padding: 2rem 1.5rem;
+  }
+  
+  .auth-title {
+    font-size: 1.5rem;
+  }
+  
+  .form-group input {
+    padding: 0.75rem;
+    font-size: 0.95rem;
+  }
+  
+  .btn {
+    padding: 0.75rem 1.5rem;
+    font-size: 0.95rem;
+  }
+}
+
+/* Extra Small Mobile - below 360px */
+@media (max-width: 360px) {
+  .auth-page {
+    padding: 0.5rem;
+  }
+  
+  .auth-box {
+    padding: 1.5rem 1rem;
+  }
+  
+  .auth-title {
+    font-size: 1.25rem;
+  }
 }
 </style>
