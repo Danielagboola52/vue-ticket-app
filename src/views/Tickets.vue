@@ -191,6 +191,7 @@ export default {
       showDeleteModal: false,
       isEditing: false,
       tickets: [],
+      currentUser: null,
       form: {
         id: null,
         title: '',
@@ -209,15 +210,29 @@ export default {
     }
   },
   mounted() {
+    this.getCurrentUser()
     this.loadTickets()
   },
   methods: {
+    getCurrentUser() {
+      const userJSON = localStorage.getItem('ticketapp_current_user')
+      if (!userJSON) {
+        this.$router.push('/login')
+        return
+      }
+      this.currentUser = JSON.parse(userJSON)
+    },
+    getUserTicketsKey() {
+      return `tickets_${this.currentUser.id}`
+    },
     loadTickets() {
-      const stored = localStorage.getItem('tickets')
+      if (!this.currentUser) return
+      const stored = localStorage.getItem(this.getUserTicketsKey())
       this.tickets = stored ? JSON.parse(stored) : []
     },
     saveTickets() {
-      localStorage.setItem('tickets', JSON.stringify(this.tickets))
+      if (!this.currentUser) return
+      localStorage.setItem(this.getUserTicketsKey(), JSON.stringify(this.tickets))
     },
     openCreateModal() {
       this.isEditing = false
@@ -276,13 +291,14 @@ export default {
         const newTicket = {
           ...this.form,
           id: Date.now(),
-          createdAt: new Date().toISOString()
+          createdAt: new Date().toISOString(),
+          userId: this.currentUser.id
         }
         this.tickets.unshift(newTicket)
         this.showToast('Ticket created successfully!', 'success')
       }
 
-      localStorage.setItem('tickets', JSON.stringify(this.tickets))
+      this.saveTickets()
       this.closeModal()
     },
     confirmDelete(ticket) {
@@ -291,7 +307,7 @@ export default {
     },
     deleteTicket() {
       this.tickets = this.tickets.filter(t => t.id !== this.ticketToDelete.id)
-      localStorage.setItem('tickets', JSON.stringify(this.tickets))
+      this.saveTickets()
       this.showDeleteModal = false
       this.showToast('Ticket deleted successfully', 'success')
       this.ticketToDelete = null
@@ -321,6 +337,7 @@ export default {
     },
     handleLogout() {
       localStorage.removeItem('ticketapp_session')
+      localStorage.removeItem('ticketapp_current_user')
       this.$router.push('/')
     },
     toggleMenu() {

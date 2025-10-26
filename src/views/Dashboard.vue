@@ -17,7 +17,10 @@
 
     <div class="dashboard-content">
       <div class="container">
-        <h1 class="page-title">Dashboard</h1>
+        <div class="welcome-section">
+          <h1 class="page-title">Welcome, {{ userName }}! 👋</h1>
+          <p class="page-subtitle">Here's an overview of your tickets</p>
+        </div>
 
         <div class="stats-grid">
           <div class="stat-box">
@@ -64,21 +67,39 @@ export default {
       totalTickets: 0,
       openTickets: 0,
       resolvedTickets: 0,
-      menuOpen: false
+      menuOpen: false,
+      currentUser: null,
+      userName: 'User'
     }
   },
   mounted() {
+    this.getCurrentUser()
     this.loadStats()
   },
   methods: {
+    getCurrentUser() {
+      const userJSON = localStorage.getItem('ticketapp_current_user')
+      if (!userJSON) {
+        this.$router.push('/login')
+        return
+      }
+      this.currentUser = JSON.parse(userJSON)
+      this.userName = this.currentUser.name || 'User'
+    },
+    getUserTicketsKey() {
+      return `tickets_${this.currentUser.id}`
+    },
     loadStats() {
-      const tickets = JSON.parse(localStorage.getItem('tickets') || '[]')
+      if (!this.currentUser) return
+      
+      const tickets = JSON.parse(localStorage.getItem(this.getUserTicketsKey()) || '[]')
       this.totalTickets = tickets.length
       this.openTickets = tickets.filter(t => t.status === 'open').length
       this.resolvedTickets = tickets.filter(t => t.status === 'closed').length
     },
     handleLogout() {
       localStorage.removeItem('ticketapp_session')
+      localStorage.removeItem('ticketapp_current_user')
       this.$router.push('/')
     },
     toggleMenu() {
@@ -189,10 +210,19 @@ export default {
   padding: 2.5rem 0;
 }
 
+.welcome-section {
+  margin-bottom: 2rem;
+}
+
 .page-title {
   font-size: 2rem;
   color: #1e293b;
-  margin-bottom: 2rem;
+  margin-bottom: 0.5rem;
+}
+
+.page-subtitle {
+  font-size: 1rem;
+  color: #64748b;
 }
 
 .stats-grid {
@@ -326,6 +356,10 @@ export default {
     font-size: 2.5rem;
   }
   
+  .page-subtitle {
+    font-size: 1.1rem;
+  }
+  
   .stats-grid {
     gap: 2rem;
     margin-bottom: 3rem;
@@ -409,6 +443,10 @@ export default {
   
   .page-title {
     font-size: 1.75rem;
+  }
+  
+  .page-subtitle {
+    font-size: 0.9rem;
   }
   
   .stat-icon {
